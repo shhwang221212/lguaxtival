@@ -563,15 +563,58 @@
       margin-bottom: 15px;
     }
 
-    .team-badge {
-      background: linear-gradient(135deg, #4169E1, #1E90FF);
-      color: #fff;
+    .category-badge {
       padding: 3px 10px;
       border-radius: 15px;
       font-size: 0.85rem;
       font-weight: 600;
-      margin-right: 10px;
+      margin-right: 5px;
       display: inline-block;
+    }
+
+    .vendor-badge {
+      padding: 3px 10px;
+      border-radius: 15px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    /* 클라우드 벤더 색상 */
+    .vendor-aws {
+      background: linear-gradient(135deg, #FF9900, #FFB366);
+      color: #000;
+    }
+
+    .vendor-gcp {
+      background: linear-gradient(135deg, #34A853, #5CB85C);
+      color: #fff;
+    }
+
+    .vendor-azure {
+      background: linear-gradient(135deg, #0078D4, #5EA0E0);
+      color: #fff;
+    }
+
+    .vendor-없음 {
+      background: #95A5A6;
+      color: #fff;
+    }
+
+    /* 카테고리별 색상 */
+    .category-free {
+      background: linear-gradient(135deg, #9B59B6, #B983CC);
+      color: #fff;
+    }
+
+    .category-challenge {
+      background: linear-gradient(135deg, #E74C3C, #EC7063);
+      color: #fff;
+    }
+
+    .category-etc {
+      background: linear-gradient(135deg, #95A5A6, #BDC3C7);
+      color: #000;
     }
 
     .score-input label {
@@ -675,7 +718,7 @@
     }
 
     .participant-tag {
-      background: #ffffff;
+      background: #dad3d3;
       color: #000000;
       padding: 5px 15px;
       border-radius: 20px;
@@ -881,6 +924,28 @@
       align-items: center;
       color: #FF69B4;
     }
+
+    .team-badge {
+      background: linear-gradient(135deg, #4169E1, #1E90FF);
+      color: #fff;
+      padding: 3px 10px;
+      border-radius: 15px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-right: 10px;
+      display: inline-block;
+    }        .login-container h2 {
+               text-align: center;
+               color: #ffffff;
+               text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+             }
+
+    .login-container h2 .brand {
+      background: linear-gradient(90deg, #FF1493, #FF69B4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 30px rgba(255, 20, 147, 0.5);
+    }
   </style>
 </head>
 <body>
@@ -951,6 +1016,7 @@
             <option value="AWS">AWS</option>
             <option value="GCP">GCP</option>
             <option value="AZURE">AZURE</option>
+            <option value="없음">사용안함</option>
           </select>
         </div>
         <div class="form-group">
@@ -1778,6 +1844,12 @@
           rankLabel = `${category}2등`;
         }
 
+        const vendorClass = project.cloudVendor ? `vendor-${project.cloudVendor.toLowerCase()}` : '';
+        const categoryClass = project.criteriaCategory ?
+          (project.criteriaCategory.includes('자유') ? 'category-free' :
+            project.criteriaCategory.includes('과제') ? 'category-challenge' : 'category-etc') :
+          'category-etc';
+
         const projectCard = document.createElement('div');
         projectCard.className = 'card project-item';
         projectCard.innerHTML = `
@@ -1788,8 +1860,9 @@
                                     ${project.teamName ? `<span class="team-badge">${project.teamName}</span>` : ''}
                                     <span class="project-title">${project.title}</span>
                                 </div>
-                                <div class="project-meta">
-                                    ${project.criteriaCategory || '기타'} | ${project.cloudVendor}
+                                <div class="project-meta" style="margin-top: 10px;">
+                                    <span class="category-badge ${categoryClass}">${project.criteriaCategory || '기타'}</span>
+                                    ${project.cloudVendor ? `<span class="vendor-badge ${vendorClass}">${project.cloudVendor}</span>` : ''}
                                 </div>
                                 <div class="participant-list">
                                     ${project.participants.map(p => `<span class="participant-tag">${p}</span>`).join('')}
@@ -2231,6 +2304,12 @@
 
       // 정렬된 순서로 프로젝트 카드 생성
       projects.forEach(({ id, data: project, isScored }) => {
+        const vendorClass = project.cloudVendor ? `vendor-${project.cloudVendor.toLowerCase()}` : '';
+        const categoryClass = project.criteriaCategory ?
+          (project.criteriaCategory.includes('자유') ? 'category-free' :
+            project.criteriaCategory.includes('과제') ? 'category-challenge' : 'category-etc') :
+          'category-etc';
+
         const projectCard = document.createElement('div');
         projectCard.className = `card project-item ${isScored ? 'completed' : ''}`;
         projectCard.innerHTML = `
@@ -2241,8 +2320,9 @@
                                     <span class="project-title">${project.title}</span>
                                     ${isScored ? '<span class="completed-check">✓</span>' : ''}
                                 </div>
-                                <div class="project-meta">
-                                    ${project.criteriaCategory || '기타'} | ${project.cloudVendor}
+                                <div class="project-meta" style="margin-top: 10px;">
+                                    <span class="category-badge ${categoryClass}">${project.criteriaCategory || '기타'}</span>
+                                    ${project.cloudVendor ? `<span class="vendor-badge ${vendorClass}">${project.cloudVendor}</span>` : ''}
                                 </div>
                                 <div class="participant-list">
                                     ${project.participants.map(p => `<span class="participant-tag">${p}</span>`).join('')}
@@ -2342,7 +2422,12 @@
     scoringForm.innerHTML = `
                 <h3 style="color: #ffffff;">채점하기: ${project.teamName ? project.teamName + ' - ' : ''}${project.title}</h3>
                 <div class="project-meta" style="margin: 10px 0;">
-                    ${project.criteriaCategory} | ${project.cloudVendor}
+                    <span class="category-badge ${project.criteriaCategory?.includes('자유') ? 'category-free' :
+      project.criteriaCategory?.includes('과제') ? 'category-challenge' : 'category-etc'}">
+                        ${project.criteriaCategory || '기타'}
+                    </span>
+                    ${project.cloudVendor ?
+      `<span class="vendor-badge vendor-${project.cloudVendor.toLowerCase()}">${project.cloudVendor}</span>` : ''}
                 </div>
                 <div style="margin: 10px 0; color: #FF69B4; font-size: 0.9rem;">
                     💡 팁: 과제를 다시 클릭하면 채점 창이 닫힙니다.
