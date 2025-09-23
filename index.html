@@ -923,6 +923,196 @@
       text-shadow: 0 0 30px rgba(255, 20, 147, 0.5);
     }
   </style>
+  <style id="softer-theme">
+    /* === 눈 편한 다크 테마 변수 === */
+    :root{
+      --bg: #0f1115;
+      --bg-elev: #141821;
+      --bg-elev-2: #171c25;
+      --border: #2a2f3a;
+      --text: #e7ebf0;
+      --text-sub: #b7c0cc;
+      --brand-1: #d67ab1;  /* 기존 #FF1493 ↓ 다운톤 로즈 */
+      --brand-2: #f1a7c6;  /* 서브 포인트 */
+      --ok-1: #78c2a4;     /* success */
+      --warn-1: #f1c40f;   /* warning */
+      --err-1: #e07a7a;    /* error */
+      --shadow: 0 6px 18px rgba(0,0,0,0.35);
+      --shadow-soft: 0 4px 12px rgba(0,0,0,0.25);
+      --radius: 14px;
+      --focus: 0 0 0 3px rgba(214,122,177,0.25);
+    }
+
+    /* 글로벌 */
+    * { box-sizing: border-box; }
+    html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    body{
+      background: var(--bg) !important;
+      color: var(--text) !important;
+    }
+    .container{ padding: 16px; }
+
+    /* 헤더/타이틀 */
+    header{
+      background: linear-gradient(0deg, var(--bg-elev) 0%, var(--bg) 100%) !important;
+      padding: 20px 0 !important;
+      border-bottom: 1px solid var(--border) !important;
+      box-shadow: var(--shadow-soft) !important;
+      margin-bottom: 20px !important;
+    }
+    h1,h2,h3,h4{
+      color: var(--text) !important;
+      text-shadow: none !important;
+    }
+    h1 .brand, .login-container h2 .brand{
+      /*background: linear-gradient(90deg, var(--brand-1), var(--brand-2)) !important;*/
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* 카드/패널 */
+    .card,
+    .login-container,
+    .modal-content,
+    .score-detail-section,
+    .criteria-card,
+    .criteria-item-input,
+    .judge-score-card,
+    .existing-score{
+      background: var(--bg-elev) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: var(--radius) !important;
+      box-shadow: var(--shadow) !important;
+    }
+    .card:hover{ transform: none !important; box-shadow: var(--shadow) !important; }
+
+    /* 탭 */
+    .tabs{ border-bottom: 1px solid var(--border) !important; }
+    .tab-btn{
+      color: var(--text-sub) !important;
+      border: 1px solid var(--border) !important;
+      background: transparent !important;
+    }
+    .tab-btn.active{
+      background: var(--bg-elev-2) !important;
+      color: var(--text) !important;
+      border-color: var(--brand-1) !important;
+    }
+
+    /* 입력/폼 */
+    label{ color: var(--text-sub) !important; }
+    input, select, textarea{
+      background: var(--bg-elev-2) !important;
+      color: var(--text) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: 10px !important;
+    }
+    input::placeholder, textarea::placeholder{ color: #8391a2 !important; }
+    input:focus, select:focus, textarea:focus{
+      outline: none !important;
+      border-color: var(--brand-1) !important;
+      box-shadow: var(--focus) !important;
+      background: var(--bg-elev) !important;
+    }
+
+    /* 버튼 */
+    button{
+      background: linear-gradient(180deg, var(--brand-2), var(--brand-1)) !important;
+      color: #101318 !important;
+      border: none !important;
+      border-radius: 10px !important;
+      box-shadow: var(--shadow-soft) !important;
+      transition: transform .06s ease;
+    }
+    button:hover{ transform: translateY(-1px); }
+    button:active{ transform: translateY(0); }
+
+    /* 버튼 변형 */
+    .export-btn{
+      background: linear-gradient(180deg, #a8e3c8, var(--ok-1)) !important;
+      color: #0e141a !important;
+    }
+    .reset-btn{
+      background: linear-gradient(180deg, #f2b3b3, var(--err-1)) !important;
+      color: #1a0f12 !important;
+    }
+    .add-btn{ background: linear-gradient(180deg, #a9c7f4, #6ea7f0) !important; color: #0f131a !important; }
+    .remove-btn,.delete-btn{ background: #c86b6b !important; }
+    .edit-btn{ background: #e1c46a !important; color: #191308 !important; }
+    .back-btn{ background: #555e6b !important; }
+
+    /* 배지/메타 */
+    .project-meta{ color: var(--text-sub) !important; }
+    .vendor-badge,
+    .category-badge,
+    .team-badge{
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+    .vendor-aws{ background: #f2c184 !important; color: #111 !important; }
+    .vendor-gcp{ background: #7dcf8e !important; color: #0d130d !important; }
+    .vendor-azure{ background: #7fb1e8 !important; color: #0d1219 !important; }
+    .vendor-없음{ background: #7c8a97 !important; color: #fff !important; }
+    .category-free{ background: #8d7cc2 !important; color: #fff !important; }
+    .category-challenge{ background: #d18181 !important; color: #fff !important; }
+    .category-etc{ background: #8996a3 !important; color: #0e141a !important; }
+    .participant-tag{ background: #e9edf3 !important; color: #1a2029 !important; }
+
+    /* 점수/텍스트 색 재조정 */
+    .score-summary-label,
+    .judge-score-label{ color: var(--text-sub) !important; }
+    .score-summary-value,
+    .judge-score-value,
+    .project-title{ color: var(--text) !important; }
+    .total-score{
+      background: none !important;
+      -webkit-text-fill-color: unset !important;
+      color: var(--brand-2) !important;
+    }
+
+    /* 메시지(알림) */
+    .message-container{ top: 16px !important; }
+    .success-message,
+    .error-message,
+    .info-message{
+      border-radius: 10px !important;
+      box-shadow: var(--shadow-soft) !important;
+    }
+    .success-message{ background: var(--ok-1) !important; color: #0e141a !important; }
+    .error-message{ background: var(--err-1) !important; color: #fff !important; }
+    .info-message{ background: var(--warn-1) !important; color: #1a1304 !important; }
+
+    /* 랭크 배지(금/은 톤 다운) */
+    .project-rank{
+      background: linear-gradient(135deg, #d8c77a, #b39b4a) !important;
+      color: #0f1115 !important;
+      box-shadow: none !important;
+    }
+
+    /* 완료 카드 강조를 부드럽게 */
+    .card.completed{
+      background: var(--bg-elev-2) !important;
+      border-color: #6dbd9e !important;
+    }
+    .card.completed .project-title{ color: #9ed4bf !important; }
+    .card.completed::after{
+      color: #9ed4bf !important;
+      font-size: .85rem !important;
+    }
+
+    /* 애니메이션/글로우 완화 */
+    @keyframes fadeIn { from{ opacity:.0; transform: translateY(6px);} to{ opacity:1; transform: translateY(0);} }
+    @keyframes slideDown { from{ opacity:0; max-height:0; transform: translateY(-8px);} to{ opacity:1; max-height:2000px; transform: translateY(0);} }
+    @keyframes slideIn { from{ transform: translateX(-12px); opacity:0;} to{ transform: translateX(0); opacity:1;} }
+    .card, .login-container, .modal-content{ transition: background .2s ease, border-color .2s ease; }
+
+    /* 모바일 여백 소폭 증가 */
+    @media (max-width: 768px){
+      .container{ padding: 12px; }
+      .card{ padding: 16px !important; }
+    }
+  </style>
+
 </head>
 <body>
 <div class="message-container" id="messageContainer"></div>
