@@ -187,6 +187,11 @@
       h1 {
         font-size: 1.5rem;
         padding-right: 100px;
+        text-align: center;
+      }
+
+      h2 {
+        text-align: center;
       }
 
       .logout-btn {
@@ -215,8 +220,32 @@
         padding: 3px 8px;
       }
 
+      .project-info {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
       .project-info > div {
+        margin-left: 0 !important;
+        width: 100%;
+      }
+
+      #adminPage .project-info > div {
         margin-left: 70px !important;
+      }
+
+      .total-score {
+        margin-top: 10px;
+        text-align: left;
+      }
+
+      .card {
+        padding: 15px;
+      }
+
+      .team-badge {
+        margin-bottom: 5px;
+        display: inline-block;
       }
 
       header {
@@ -225,6 +254,25 @@
 
       .container {
         padding: 10px;
+      }
+
+      #judgePage h1 {
+        padding-right: 0;
+      }
+
+      #judgePage .container {
+        text-align: center;
+      }
+
+      #judgePage .project-list {
+        text-align: left;
+      }
+
+      .scoring-section button {
+        margin: 10px auto;
+        display: block;
+        width: 80%;
+        max-width: 300px;
       }
     }
 
@@ -294,6 +342,16 @@
       color: #32CD32;
     }
 
+    /* 관리자 페이지에서는 핑크색 유지 */
+    #adminPage .project-title {
+      color: #FF69B4;
+    }
+
+    #adminPage .participant-tag {
+      background: #FF1493;
+      color: #000;
+    }
+
     .card.completed::after {
       content: '✓ 채점 완료';
       position: absolute;
@@ -324,7 +382,11 @@
     .project-title {
       font-size: 1.2rem;
       font-weight: 600;
-      color: #FF69B4;
+      color: #ffffff;
+    }
+
+    .judgePage .project-title {
+      color: #ffffff;
     }
 
     .project-meta {
@@ -609,8 +671,8 @@
     }
 
     .participant-tag {
-      background: #FF1493;
-      color: #000;
+      background: #ffffff;
+      color: #000000;
       padding: 5px 15px;
       border-radius: 20px;
       font-size: 0.9rem;
@@ -2134,11 +2196,37 @@
         scoredProjectIds.add(doc.data().projectId);
       });
 
-      const projectCards = [];
-      for (const doc of projectsSnapshot.docs) {
+      // 프로젝트 데이터를 배열로 수집
+      const projects = [];
+      projectsSnapshot.forEach(doc => {
         const project = doc.data();
         const isScored = scoredProjectIds.has(doc.id);
+        projects.push({
+          id: doc.id,
+          data: project,
+          isScored: isScored
+        });
+      });
 
+      // 조 이름으로 정렬 (오름차순)
+      // 숫자가 포함된 조 이름도 자연스럽게 정렬되도록 처리
+      projects.sort((a, b) => {
+        const teamA = a.data.teamName || '';
+        const teamB = b.data.teamName || '';
+
+        // 숫자 추출을 위한 정규식
+        const numA = parseInt(teamA.match(/\d+/) || '999');
+        const numB = parseInt(teamB.match(/\d+/) || '999');
+
+        // 숫자가 있으면 숫자로 비교, 없으면 문자열로 비교
+        if (!isNaN(numA) && !isNaN(numB)) {
+          return numA - numB;
+        }
+        return teamA.localeCompare(teamB, 'ko');
+      });
+
+      // 정렬된 순서로 프로젝트 카드 생성
+      projects.forEach(({ id, data: project, isScored }) => {
         const projectCard = document.createElement('div');
         projectCard.className = `card project-item ${isScored ? 'completed' : ''}`;
         projectCard.innerHTML = `
@@ -2157,11 +2245,9 @@
                             </div>
                         </div>
                     `;
-        projectCard.onclick = () => showScoringForm(doc.id, project, projectCard);
-        projectCards.push(projectCard);
-      }
-
-      projectCards.forEach(card => projectsList.appendChild(card));
+        projectCard.onclick = () => showScoringForm(id, project, projectCard);
+        projectsList.appendChild(projectCard);
+      });
     } catch (error) {
       // 오류 무시
     }
