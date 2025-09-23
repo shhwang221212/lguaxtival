@@ -167,41 +167,16 @@
       transform: translateY(0);
     }
 
-    .logout-btn {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: transparent;
-      border: 2px solid #FF1493;
-      color: #FF1493;
-      padding: 8px 20px;
-      z-index: 10;
-    }
 
-    .logout-btn:hover {
-      background: #FF1493;
-      color: #000;
-    }
 
     @media (max-width: 768px) {
       h1 {
         font-size: 1.5rem;
-        padding-right: 100px;
         text-align: center;
       }
 
       h2 {
         text-align: center;
-      }
-
-      .logout-btn {
-        position: fixed;
-        top: auto;
-        bottom: 20px;
-        right: 20px;
-        z-index: 1000;
-        background: #FF1493;
-        color: #000;
       }
 
       .tabs {
@@ -261,7 +236,7 @@
       }
 
       #judgePage h1 {
-        padding-right: 0;
+        text-align: center;
       }
 
       #judgePage .container {
@@ -718,7 +693,7 @@
     }
 
     .participant-tag {
-      background: #dad3d3;
+      background: #ffffff;
       color: #000000;
       padding: 5px 15px;
       border-radius: 20px;
@@ -972,7 +947,6 @@
   <header>
     <div class="container">
       <h1><span class="brand">AXtival</span> 해커톤 채점 어플 - 관리자</h1>
-      <button class="logout-btn" onclick="logout()">로그아웃</button>
     </div>
   </header>
   <div class="container">
@@ -1104,7 +1078,6 @@
         <span class="brand">AXtival</span> 해커톤 채점 어플<br>
         <span style="font-size: 1.8rem;">심사위원 - <span id="judgeName" style="color: #FF69B4;"></span></span>
       </h1>
-      <button class="logout-btn" onclick="logout()">로그아웃</button>
     </div>
   </header>
   <div class="container">
@@ -1234,13 +1207,7 @@
     }
   };
 
-  window.logout = function() {
-    window.appState.currentUser = null;
-    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-    document.getElementById('loginPage').classList.add('active');
-    document.getElementById('loginId').value = '';
-    document.getElementById('loginPassword').value = '';
-  };
+
 
   // 심사항목 관련 함수
   window.addCriteriaItem = function() {
