@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+}<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
@@ -38,24 +38,36 @@
     h1 {
       font-size: 2.5rem;
       text-align: center;
+      color: #ffffff;
+      text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+    }
+
+    h1 .brand {
       background: linear-gradient(90deg, #FF1493, #FF69B4);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      background-clip: text;
       text-shadow: 0 0 30px rgba(255, 20, 147, 0.5);
-      color: #fff3e0;
+      font-weight: bold;
     }
 
     h2 {
-      color: #fff3e0;
+      color: #ffffff;
       margin-bottom: 20px;
       font-size: 1.8rem;
-      text-shadow: 0 0 10px rgba(255, 20, 147, 0.5);
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
     }
 
     h3 {
-      color: #FF69B4;
+      color: #ffffff;
       margin-bottom: 15px;
       font-size: 1.3rem;
+    }
+
+    h4 {
+      color: #ffffff;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
     }
 
     .page {
@@ -82,6 +94,23 @@
       box-shadow: 0 10px 40px rgba(255, 20, 147, 0.3);
     }
 
+    .login-container h2 {
+      text-align: center;
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      margin-bottom: 30px;
+      font-size: 1.8rem;
+    }
+
+    .login-container h2 .brand {
+      background: linear-gradient(90deg, #FF1493, #FF69B4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 30px rgba(255, 20, 147, 0.5);
+      font-weight: bold;
+    }
+
     .form-group {
       margin-bottom: 20px;
     }
@@ -89,7 +118,7 @@
     label {
       display: block;
       margin-bottom: 8px;
-      color: #FFFFFF;
+      color: #FF69B4;
       font-weight: 600;
     }
 
@@ -97,8 +126,8 @@
       width: 100%;
       padding: 12px;
       border: 2px solid #FF1493;
-      background: #fff3e0;
-      color: #0a0a0a;
+      background: #0a0a0a;
+      color: #FF69B4;
       border-radius: 10px;
       font-size: 16px;
       transition: all 0.3s ease;
@@ -106,10 +135,9 @@
 
     input:focus, select:focus, textarea:focus {
       outline: none;
-      border-color: #0a0a0a;
+      border-color: #FF69B4;
       box-shadow: 0 0 20px rgba(255, 20, 147, 0.5);
       background: #1a1a1a;
-      color: #fff3e0;
     }
 
     input[type="checkbox"] {
@@ -147,11 +175,57 @@
       border: 2px solid #FF1493;
       color: #FF1493;
       padding: 8px 20px;
+      z-index: 10;
     }
 
     .logout-btn:hover {
       background: #FF1493;
       color: #000;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 1.5rem;
+        padding-right: 100px;
+      }
+
+      .logout-btn {
+        position: fixed;
+        top: auto;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        background: #FF1493;
+        color: #000;
+      }
+
+      .tabs {
+        flex-direction: column;
+      }
+
+      .tab-btn {
+        width: 100%;
+        border-radius: 10px;
+        margin-bottom: 5px;
+      }
+
+      .project-rank {
+        font-size: 0.7rem;
+        min-width: 60px;
+        padding: 3px 8px;
+      }
+
+      .project-info > div {
+        margin-left: 70px !important;
+      }
+
+      header {
+        padding: 20px 0;
+      }
+
+      .container {
+        padding: 10px;
+      }
     }
 
     .export-btn {
@@ -297,7 +371,7 @@
 
     .tab-btn.active {
       background: #FF1493;
-      color: #fff3e0;
+      color: #000;
     }
 
     .tab-content {
@@ -336,7 +410,6 @@
       border-radius: 15px;
       padding: 25px;
       margin-top: 20px;
-      color: #fff3e0;
     }
 
     .score-summary {
@@ -424,9 +497,21 @@
       margin-bottom: 15px;
     }
 
+    .team-badge {
+      background: linear-gradient(135deg, #4169E1, #1E90FF);
+      color: #fff;
+      padding: 3px 10px;
+      border-radius: 15px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-right: 10px;
+      display: inline-block;
+    }
+
     .score-input label {
       flex: 1;
       margin-bottom: 0;
+      color: #ffffff;
     }
 
     .score-input input {
@@ -454,7 +539,6 @@
       border-radius: 10px;
       padding: 15px;
       margin-bottom: 20px;
-      color: #fff3e0;
     }
 
     .existing-score h4 {
@@ -466,7 +550,7 @@
       display: flex;
       justify-content: space-between;
       padding: 5px 0;
-      color: #FFFFFF;
+      color: #FF69B4;
     }
 
     .success-message {
@@ -525,7 +609,7 @@
     }
 
     .participant-tag {
-      background: #fff3e0;
+      background: #FF1493;
       color: #000;
       padding: 5px 15px;
       border-radius: 20px;
@@ -581,7 +665,7 @@
 
     .user-name {
       font-size: 1.1rem;
-      color: #fff3e0;
+      color: #FF69B4;
       font-weight: 600;
       margin-bottom: 5px;
     }
@@ -621,12 +705,12 @@
     }
 
     .back-btn {
-      background: #FFFFFF;
+      background: #6c757d;
       margin-bottom: 20px;
     }
 
     .back-btn:hover {
-      background: #fff3e0;
+      background: #5a6268;
     }
 
     .criteria-item {
@@ -731,10 +815,6 @@
       align-items: center;
       color: #FF69B4;
     }
-
-    .axtival {
-      color: #fff3e0;
-    }
   </style>
 </head>
 <body>
@@ -742,7 +822,7 @@
 
 <div id="loginPage" class="page active">
   <div class="login-container">
-    <h2 align="center">AXtival 해커톤</h2>
+    <h2><span class="brand">AXtival</span> 채점 어플</h2>
     <div class="form-group">
       <label for="loginId">아이디</label>
       <input type="text" id="loginId" placeholder="아이디를 입력하세요">
@@ -751,27 +831,27 @@
       <label for="loginPassword">비밀번호</label>
       <input type="password" id="loginPassword" placeholder="비밀번호를 입력하세요">
     </div>
-    <center>
+    <div style="text-align: center;">
       <button onclick="login()">로그인</button>
-    </center>
+    </div>
   </div>
 </div>
 
 <div id="adminPage" class="page">
   <header>
     <div class="container">
-      <h1><span class="axtival">AXtival</span> 해커톤 채점 어플 - 관리자</h1>
+      <h1><span class="brand">AXtival</span> 해커톤 채점 어플 - 관리자</h1>
       <button class="logout-btn" onclick="logout()">로그아웃</button>
     </div>
   </header>
   <div class="container">
     <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('projectList')">과제 목록</button>
       <button class="tab-btn" onclick="switchTab('projectRegister')">과제 등록</button>
-      <button class="tab-btn active" onclick="switchTab('projectList')">과제 관리</button>
-      <button class="tab-btn" onclick="switchTab('criteriaCreate')">심사항목 등록</button>
+      <button class="tab-btn" onclick="switchTab('criteriaCreate')">심사항목 생성</button>
       <button class="tab-btn" onclick="switchTab('criteriaManage')">심사항목 관리</button>
-      <button class="tab-btn" onclick="switchTab('register')">심사위원 등록</button>
       <button class="tab-btn" onclick="switchTab('judges')">심사위원 관리</button>
+      <button class="tab-btn" onclick="switchTab('register')">심사위원 등록</button>
     </div>
 
     <div id="projectListTab" class="tab-content active">
@@ -786,6 +866,10 @@
     <div id="projectRegisterTab" class="tab-content">
       <h2>과제 등록</h2>
       <div class="card">
+        <div class="form-group">
+          <label>조 명</label>
+          <input type="text" id="teamName" placeholder="예: 1조, A팀">
+        </div>
         <div class="form-group">
           <label>과제명</label>
           <input type="text" id="projectTitle" placeholder="과제명 입력">
@@ -814,7 +898,7 @@
     </div>
 
     <div id="criteriaCreateTab" class="tab-content">
-      <h2>심사항목 등록</h2>
+      <h2>심사항목 생성</h2>
       <div class="card">
         <div class="form-group">
           <label>카테고리(부문)</label>
@@ -883,8 +967,11 @@
 
 <div id="judgePage" class="page">
   <header>
-    <div class="container" style="color: #fff3e0">
-      <h1><span class="axtival" style="color: #fff3e0">AXtival</span> 해커톤 채점 어플 - 심사위원</h1>
+    <div class="container">
+      <h1>
+        <span class="brand">AXtival</span> 해커톤 채점 어플<br>
+        <span style="font-size: 1.8rem;">심사위원 - <span id="judgeName" style="color: #FF69B4;"></span></span>
+      </h1>
       <button class="logout-btn" onclick="logout()">로그아웃</button>
     </div>
   </header>
@@ -1003,6 +1090,8 @@
           window.loadAdminData();
         } else if (userData.role === 'judge') {
           document.getElementById('judgePage').classList.add('active');
+          // 심사위원 이름 표시
+          document.getElementById('judgeName').textContent = userData.name;
           window.loadJudgeProjects();
         }
       } else {
@@ -1187,6 +1276,8 @@
           loadAdminData();
         } else if (userData.role === 'judge') {
           document.getElementById('judgePage').classList.add('active');
+          // 심사위원 이름 표시
+          document.getElementById('judgeName').textContent = userData.name;
           loadJudgeProjects();
         }
       } else {
@@ -1480,12 +1571,13 @@
   };
 
   window.registerProject = async function() {
+    const teamName = document.getElementById('teamName').value;
     const title = document.getElementById('projectTitle').value;
     const participants = document.getElementById('projectParticipants').value;
     const vendor = document.getElementById('cloudVendor').value;
     const categoryId = document.getElementById('projectCategory').value;
 
-    if (!title || !participants || !vendor || !categoryId) {
+    if (!teamName || !title || !participants || !vendor || !categoryId) {
       window.showMessage('모든 필드를 입력하세요.', 'error');
       return;
     }
@@ -1496,6 +1588,7 @@
       const criteriaData = criteriaDoc.data();
 
       await addDoc(collection(db, 'projects'), {
+        teamName: teamName,
         title: title,
         participants: participants.split(',').map(p => p.trim()),
         cloudVendor: vendor,
@@ -1507,6 +1600,7 @@
 
       window.showMessage('과제가 등록되었습니다!', 'success');
 
+      document.getElementById('teamName').value = '';
       document.getElementById('projectTitle').value = '';
       document.getElementById('projectParticipants').value = '';
       document.getElementById('cloudVendor').value = '';
@@ -1624,7 +1718,10 @@
                         ${rank > 0 ? `<div class="project-rank" style="background: ${rank === 1 ? 'linear-gradient(135deg, #FFD700, #FFA500)' : 'linear-gradient(135deg, #C0C0C0, #808080)'};">${rankLabel}</div>` : ''}
                         <div class="project-info">
                             <div style="${rank > 0 ? 'margin-left: 120px;' : ''}">
-                                <div class="project-title">${project.title}</div>
+                                <div style="margin-bottom: 8px;">
+                                    ${project.teamName ? `<span class="team-badge">${project.teamName}</span>` : ''}
+                                    <span class="project-title">${project.title}</span>
+                                </div>
                                 <div class="project-meta">
                                     ${project.criteriaCategory || '기타'} | ${project.cloudVendor}
                                 </div>
@@ -1692,7 +1789,10 @@
       const detailContent = document.getElementById('projectDetailContent');
       detailContent.innerHTML = `
                     <div class="score-detail-section">
-                        <h2>${project.title}</h2>
+                        <h2 style="color: #ffffff;">
+                            ${project.teamName ? `<span class="team-badge">${project.teamName}</span>` : ''}
+                            ${project.title}
+                        </h2>
                         <div class="project-meta" style="margin-bottom: 20px;">
                             ${project.criteriaCategory || '기타'} | ${project.cloudVendor}
                         </div>
@@ -2044,7 +2144,10 @@
         projectCard.innerHTML = `
                         <div class="project-info">
                             <div>
-                                <div class="project-title">${project.title}</div>
+                                <div style="margin-bottom: 8px;">
+                                    ${project.teamName ? `<span class="team-badge">${project.teamName}</span>` : ''}
+                                    <span class="project-title">${project.title}</span>
+                                </div>
                                 <div class="project-meta">
                                     ${project.criteriaCategory || '기타'} | ${project.cloudVendor}
                                 </div>
@@ -2067,6 +2170,14 @@
   window.showScoringForm = async function(projectId, project, element) {
     // 기존 채점 폼이 있으면 제거
     const existingForm = document.getElementById('scoringForm');
+
+    // 같은 과제를 다시 클릭한 경우 폼을 닫기만 함
+    if (existingForm && existingForm.dataset.projectId === projectId) {
+      existingForm.remove();
+      return;
+    }
+
+    // 다른 과제의 폼이 열려있으면 제거
     if (existingForm) existingForm.remove();
 
     // 심사 기준 정보 가져오기
@@ -2110,6 +2221,7 @@
     const scoringForm = document.createElement('div');
     scoringForm.id = 'scoringForm';
     scoringForm.className = 'scoring-section';
+    scoringForm.dataset.projectId = projectId; // 프로젝트 ID 저장
 
     let existingScoreHtml = '';
     if (existingScore) {
@@ -2117,12 +2229,12 @@
                     <div class="existing-score">
                         <h4>기존 채점 내역</h4>
                         ${criteriaData.items.filter(item => item.type === 'number').map(item => `
-                            <div class="score-detail" style="color: #fff3e0">
+                            <div class="score-detail">
                                 <span>${item.name}:</span>
                                 <span>${existingScore.itemScores?.[item.name] || 0}점 / ${item.score}점</span>
                             </div>
                         `).join('')}
-                        <div class="score-detail" style="color: #fff3e0">
+                        <div class="score-detail">
                             <span>총점:</span>
                             <span><strong>${existingScore.totalScore}점 / ${criteriaData.totalScore}점</strong></span>
                         </div>
@@ -2137,15 +2249,18 @@
     }
 
     scoringForm.innerHTML = `
-                <h3 style="color: #fff3e0">채점하기: ${project.title}</h3>
+                <h3 style="color: #ffffff;">채점하기: ${project.teamName ? project.teamName + ' - ' : ''}${project.title}</h3>
                 <div class="project-meta" style="margin: 10px 0;">
                     ${project.criteriaCategory} | ${project.cloudVendor}
+                </div>
+                <div style="margin: 10px 0; color: #FF69B4; font-size: 0.9rem;">
+                    💡 팁: 과제를 다시 클릭하면 채점 창이 닫힙니다.
                 </div>
 
                 ${existingScoreHtml}
 
-                <h4 style="margin-top: 20px; color: #FFFFFF;">심사기준</h4>
-                <div style="background: #0a0a0a; padding: 15px; border-radius: 10px; margin-bottom: 20px; color: #fff3e0">
+                <h4 style="margin-top: 20px; color: #ffffff;">심사기준</h4>
+                <div style="background: #0a0a0a; padding: 15px; border-radius: 10px; margin-bottom: 20px; color: #ffffff;">
                     ${criteriaData.description}
                 </div>
 
@@ -2153,8 +2268,8 @@
       if (item.type === 'number') {
         return `
                             <div class="score-input">
-                                <label>${item.name} ${item.required ? '<span style="color: #32CD32;">(필수)</span>' : ''}
-                                    <span class="score-percentage">(${item.score}점 만점)</span>
+                                <label style="color: #ffffff;">${item.name} ${item.required ? '<span style="color: #32CD32;">(필수)</span>' : ''}
+                                    <span class="score-percentage" style="color: #FF69B4;">(${item.score}점 만점)</span>
                                 </label>
                                 <input type="number"
                                        id="score_${item.name}"
@@ -2171,7 +2286,7 @@
       } else {
         return `
                             <div class="form-group">
-                                <label>${item.name} ${item.required ? '<span style="color: #32CD32;">(필수)</span>' : ''}</label>
+                                <label style="color: #ffffff;">${item.name} ${item.required ? '<span style="color: #32CD32;">(필수)</span>' : ''}</label>
                                 <textarea id="text_${item.name}"
                                           rows="4"
                                           placeholder="${item.name}을(를) 입력하세요"
@@ -2185,7 +2300,6 @@
                 <div class="total-score" id="totalScore">총점: 0점 / ${criteriaData.totalScore}점</div>
 
                 <button onclick="submitDynamicScore('${projectId}', '${criteriaData.totalScore}')">${existingScore ? '점수 수정' : '채점 제출'}</button>
-                <button onclick="document.getElementById('scoringForm').remove()" style="margin-left: 10px; background: #6c757d;">취소</button>
             `;
 
     // 클릭한 과제 카드 바로 아래에 채점 폼 삽입
