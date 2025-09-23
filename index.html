@@ -2629,8 +2629,8 @@
                                        id="score_${item.name}"
                                        min="0"
                                        max="${item.score}"
-                                       step="0.5"
-                                       value="${existingScore?.itemScores?.[item.name] || 0}"
+                                       step="1"
+                                       value="${existingScore?.itemScores?.[item.name] || ''}"
                                        data-max="${item.score}"
                                        data-name="${item.name}"
                                        data-required="${item.required}"
@@ -2708,15 +2708,27 @@
       const itemName = input.dataset.name;
       const required = input.dataset.required === 'true';
 
-      if (required && value === 0) {
+      const num = Number(value);
+
+      // required여도 0은 허용. 비어있거나 숫자가 아니면 에러
+      if (required && (value === '' || value === null || value === undefined || Number.isNaN(num))) {
         window.showMessage(`필수 항목 "${itemName}"을(를) 채점해주세요.`, 'error');
         return;
       }
 
-      if (value < 0 || value > maxScore) {
+      if (num < 0 || num > maxScore) {
         window.showMessage(`${itemName} 점수는 0-${maxScore}점 사이여야 합니다.`, 'error');
         return;
       }
+      // if (required && value === 0) {
+      //   window.showMessage(`필수 항목 "${itemName}"을(를) 채점해주세요.`, 'error');
+      //   return;
+      // }
+      //
+      // if (value < 0 || value > maxScore) {
+      //   window.showMessage(`${itemName} 점수는 0-${maxScore}점 사이여야 합니다.`, 'error');
+      //   return;
+      // }
 
       itemScores[itemName] = value;
       totalScore += value;
