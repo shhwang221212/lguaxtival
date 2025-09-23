@@ -243,6 +243,10 @@
         padding: 15px;
       }
 
+      .card.completed::after {
+        display: none;
+      }
+
       .team-badge {
         margin-bottom: 5px;
         display: inline-block;
@@ -2235,6 +2239,7 @@
                                 <div style="margin-bottom: 8px;">
                                     ${project.teamName ? `<span class="team-badge">${project.teamName}</span>` : ''}
                                     <span class="project-title">${project.title}</span>
+                                    ${isScored ? '<span class="completed-check">✓</span>' : ''}
                                 </div>
                                 <div class="project-meta">
                                     ${project.criteriaCategory || '기타'} | ${project.cloudVendor}
