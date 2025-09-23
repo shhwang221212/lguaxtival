@@ -327,7 +327,7 @@
     }
 
     #adminPage .participant-tag {
-      background: #FF1493;
+      background: #FFFFFF;
       color: #000;
     }
 
@@ -769,12 +769,12 @@
       height: 100%;
       background: rgba(0, 0, 0, 0.8);
       z-index: 10000;
+      justify-content: center;
+      align-items: center;
     }
 
     .modal.active {
       display: flex;
-      justify-content: center;
-      align-items: center;
     }
 
     .modal-content {
@@ -786,6 +786,7 @@
       width: 90%;
       max-height: 80vh;
       overflow-y: auto;
+      position: relative;
     }
 
     .back-btn {
@@ -963,6 +964,7 @@
       <h2>과제 목록</h2>
       <div style="display: flex; gap: 10px; flex-wrap: wrap;">
         <button class="reset-btn" onclick="resetProjects()">과제 초기화</button>
+        <button class="reset-btn" onclick="resetScores()">채점 내역 초기화</button>
         <button class="export-btn" onclick="exportToCSV()">채점 내역 CSV 내보내기</button>
       </div>
       <div id="adminProjectList" class="project-list"></div>
@@ -1108,6 +1110,43 @@
   </div>
 </div>
 
+<div id="projectEditModal" class="modal">
+  <div class="modal-content">
+    <h3>과제 수정</h3>
+    <div class="form-group">
+      <label>조 명</label>
+      <input type="text" id="editTeamName" placeholder="예: 1조, A팀">
+    </div>
+    <div class="form-group">
+      <label>과제명</label>
+      <input type="text" id="editProjectTitle" placeholder="과제명 입력">
+    </div>
+    <div class="form-group">
+      <label>참가자 (쉼표로 구분)</label>
+      <input type="text" id="editProjectParticipants" placeholder="예: 홍길동, 김철수, 이영희">
+    </div>
+    <div class="form-group">
+      <label>클라우드 벤더</label>
+      <select id="editCloudVendor">
+        <option value="">선택하세요</option>
+        <option value="AWS">AWS</option>
+        <option value="GCP">GCP</option>
+        <option value="AZURE">AZURE</option>
+        <option value="없음">사용안함</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>심사 카테고리</label>
+      <select id="editProjectCategory">
+        <option value="">선택하세요</option>
+      </select>
+    </div>
+    <div class="action-buttons">
+      <button onclick="updateProject()">수정</button>
+      <button onclick="closeProjectModal()" style="background: #6c757d;">취소</button>
+    </div>
+  </div>
+</div>
 <div id="criteriaEditModal" class="modal">
   <div class="modal-content">
     <h3>심사항목 수정</h3>
@@ -1140,7 +1179,8 @@
     scores: [],
     criteria: [],
     editingUserId: null,
-    editingCriteriaId: null
+    editingCriteriaId: null,
+    editingProjectId: null
   };
 
   // 메시지 표시 함수
@@ -1157,6 +1197,25 @@
       messageEl.style.opacity = '0';
       setTimeout(() => messageContainer.innerHTML = '', 300);
     }, 3000);
+  };
+
+  // 로그인 상태 확인 및 복원
+  window.checkLoginStatus = function() {
+    // 메모리에서 로그인 정보 확인
+    if (window.appState && window.appState.currentUser) {
+      const userData = window.appState.currentUser;
+
+      document.getElementById('loginPage').classList.remove('active');
+
+      if (userData.role === 'admin') {
+        document.getElementById('adminPage').classList.add('active');
+        if (window.loadAdminData) window.loadAdminData();
+      } else if (userData.role === 'judge') {
+        document.getElementById('judgePage').classList.add('active');
+        document.getElementById('judgeName').textContent = userData.name;
+        if (window.loadJudgeProjects) window.loadJudgeProjects();
+      }
+    }
   };
 
   window.login = async function() {
@@ -1183,10 +1242,18 @@
         const userDoc = querySnapshot.docs[0];
         const userData = userDoc.data();
 
+        // 전역 상태에 사용자 정보 저장 (메모리)
         window.appState.currentUser = {
           id: userDoc.id,
           ...userData
         };
+
+        // sessionStorage에도 저장 (새로고침 대응)
+        try {
+          sessionStorage.setItem('currentUser', JSON.stringify(window.appState.currentUser));
+        } catch(e) {
+          // sessionStorage 사용 불가 시 무시
+        }
 
         document.getElementById('loginPage').classList.remove('active');
 
@@ -1269,7 +1336,9 @@
   };
 
   window.closeCriteriaModal = function() {
-    document.getElementById('criteriaEditModal').classList.remove('active');
+    const modal = document.getElementById('criteriaEditModal');
+    modal.classList.remove('active');
+    modal.style.display = 'none';
     window.appState.editingCriteriaId = null;
   };
 
@@ -1284,6 +1353,7 @@
   window.exportToCSV = function() { };
   window.deleteProject = function(projectId) { };
   window.resetProjects = function() { };
+  window.resetScores = function() { };
   window.resetJudges = function() { };
   window.loadJudgesList = function() { };
   window.editUser = function(userId) { };
@@ -1301,6 +1371,10 @@
   window.editCriteria = function(criteriaId) { };
   window.updateCriteria = function() { };
   window.deleteCriteria = function(criteriaId) { };
+  window.editProject = function(projectId) { };
+  window.updateProject = function() { };
+  window.closeProjectModal = function() { };
+  window.loadCategoriesForEditProject = function() { };
 </script>
 
 <script type="module">
@@ -1363,10 +1437,18 @@
         const userDoc = querySnapshot.docs[0];
         const userData = userDoc.data();
 
+        // 전역 상태에 사용자 정보 저장
         window.appState.currentUser = {
           id: userDoc.id,
           ...userData
         };
+
+        // sessionStorage에도 저장 (새로고침 대응)
+        try {
+          sessionStorage.setItem('currentUser', JSON.stringify(window.appState.currentUser));
+        } catch(e) {
+          // sessionStorage 사용 불가 시 무시
+        }
 
         document.getElementById('loginPage').classList.remove('active');
 
@@ -1544,8 +1626,12 @@
   window.editCriteria = async function(criteriaId) {
     try {
       const criteriaDoc = await getDoc(doc(db, 'criteria', criteriaId));
-      const criteria = criteriaDoc.data();
+      if (!criteriaDoc.exists()) {
+        window.showMessage('심사항목을 찾을 수 없습니다.', 'error');
+        return;
+      }
 
+      const criteria = criteriaDoc.data();
       window.appState.editingCriteriaId = criteriaId;
 
       document.getElementById('editCriteriaCategory').value = criteria.category;
@@ -1576,9 +1662,17 @@
         itemsContainer.appendChild(itemDiv);
       });
 
-      document.getElementById('criteriaEditModal').classList.add('active');
+      // 모달 표시
+      const modal = document.getElementById('criteriaEditModal');
+      modal.classList.add('active');
+
+      // 모달 콘텐츠가 중앙에 오도록 보장
+      modal.style.display = 'flex';
+      modal.style.justifyContent = 'center';
+      modal.style.alignItems = 'center';
     } catch (error) {
       window.showMessage('심사항목 정보를 불러오는 중 오류가 발생했습니다.', 'error');
+      console.error(error);
     }
   };
 
@@ -1838,11 +1932,12 @@
                             <div class="total-score">평균: ${project.avgScore.toFixed(1)}점</div>
                         </div>
                         <div class="action-buttons">
+                            <button class="edit-btn" onclick="editProject('${project.id}')">수정</button>
                             <button class="delete-btn" onclick="deleteProject('${project.id}')">삭제</button>
                         </div>
                     `;
         projectCard.onclick = (e) => {
-          if (!e.target.classList.contains('delete-btn')) {
+          if (!e.target.classList.contains('delete-btn') && !e.target.classList.contains('edit-btn')) {
             showProjectDetail(project.id);
           }
         };
@@ -2050,6 +2145,93 @@
     }
   };
 
+  window.editProject = async function(projectId) {
+    try {
+      // 프로젝트 정보 가져오기
+      const projectDoc = await getDoc(doc(db, 'projects', projectId));
+      if (!projectDoc.exists()) {
+        window.showMessage('과제를 찾을 수 없습니다.', 'error');
+        return;
+      }
+
+      const project = projectDoc.data();
+      window.appState.editingProjectId = projectId;
+
+      // 카테고리 목록 먼저 로드
+      await loadCategoriesForEditProject();
+
+      // 폼에 값 설정
+      document.getElementById('editTeamName').value = project.teamName || '';
+      document.getElementById('editProjectTitle').value = project.title || '';
+      document.getElementById('editProjectParticipants').value = project.participants ? project.participants.join(', ') : '';
+      document.getElementById('editCloudVendor').value = project.cloudVendor || '';
+      document.getElementById('editProjectCategory').value = project.criteriaId || '';
+
+      // 모달 열기
+      document.getElementById('projectEditModal').classList.add('active');
+    } catch (error) {
+      window.showMessage('과제 정보를 불러오는 중 오류가 발생했습니다.', 'error');
+    }
+  };
+
+  window.loadCategoriesForEditProject = async function() {
+    try {
+      const criteriaSnapshot = await getDocs(collection(db, 'criteria'));
+      const categorySelect = document.getElementById('editProjectCategory');
+      categorySelect.innerHTML = '<option value="">선택하세요</option>';
+
+      criteriaSnapshot.forEach(doc => {
+        const criteria = doc.data();
+        const option = document.createElement('option');
+        option.value = doc.id;
+        option.textContent = `${criteria.category} (${criteria.totalScore}점)`;
+        categorySelect.appendChild(option);
+      });
+    } catch (error) {
+      // 오류 무시
+    }
+  };
+
+  window.updateProject = async function() {
+    const teamName = document.getElementById('editTeamName').value;
+    const title = document.getElementById('editProjectTitle').value;
+    const participants = document.getElementById('editProjectParticipants').value;
+    const vendor = document.getElementById('editCloudVendor').value;
+    const categoryId = document.getElementById('editProjectCategory').value;
+
+    if (!teamName || !title || !participants || !vendor || !categoryId) {
+      window.showMessage('모든 필드를 입력하세요.', 'error');
+      return;
+    }
+
+    try {
+      // 선택한 카테고리 정보 가져오기
+      const criteriaDoc = await getDoc(doc(db, 'criteria', categoryId));
+      const criteriaData = criteriaDoc.data();
+
+      await updateDoc(doc(db, 'projects', window.appState.editingProjectId), {
+        teamName: teamName,
+        title: title,
+        participants: participants.split(',').map(p => p.trim()),
+        cloudVendor: vendor,
+        criteriaId: categoryId,
+        criteriaCategory: criteriaData.category,
+        updatedAt: new Date()
+      });
+
+      window.showMessage('과제가 수정되었습니다.', 'success');
+      closeProjectModal();
+      loadAdminProjects();
+    } catch (error) {
+      window.showMessage('과제 수정 중 오류가 발생했습니다.', 'error');
+    }
+  };
+
+  window.closeProjectModal = function() {
+    document.getElementById('projectEditModal').classList.remove('active');
+    window.appState.editingProjectId = null;
+  };
+
   window.deleteProject = async function(projectId) {
     if (confirm('정말 이 과제를 삭제하시겠습니까?')) {
       try {
@@ -2059,6 +2241,35 @@
       } catch (error) {
         window.showMessage('과제 삭제 중 오류가 발생했습니다.', 'error');
       }
+    }
+  };
+
+  window.resetScores = async function() {
+    const confirmMessage = `정말 모든 채점 내역을 삭제하시겠습니까?\n\n⚠️ 이 작업은 되돌릴 수 없습니다.\n- 모든 심사위원의 채점 내역이 삭제됩니다.\n- 과제는 유지되지만 점수는 모두 초기화됩니다.`;
+
+    if (!confirm(confirmMessage)) {
+      return;
+    }
+
+    // 두 번 확인
+    if (!confirm('다시 한 번 확인합니다.\n정말로 모든 채점 내역을 초기화하시겠습니까?')) {
+      return;
+    }
+
+    try {
+      // 모든 채점 내역 삭제
+      const scoresSnapshot = await getDocs(collection(db, 'scores'));
+      const deletePromises = [];
+      scoresSnapshot.forEach(doc => {
+        deletePromises.push(deleteDoc(doc.ref));
+      });
+
+      await Promise.all(deletePromises);
+
+      window.showMessage(`${deletePromises.length}개의 채점 내역이 초기화되었습니다.`, 'success');
+      loadAdminProjects();
+    } catch (error) {
+      window.showMessage('채점 내역 초기화 중 오류가 발생했습니다.', 'error');
     }
   };
 
@@ -2612,6 +2823,34 @@
 
   // 페이지 로드 시 초기화
   initAdmin();
+
+  // 페이지 로드 시 로그인 상태 확인
+  document.addEventListener('DOMContentLoaded', function() {
+    try {
+      const savedUser = sessionStorage.getItem('currentUser');
+      if (savedUser) {
+        window.appState.currentUser = JSON.parse(savedUser);
+
+        // Firebase 초기화 완료 후 상태 복원
+        setTimeout(() => {
+          if (window.appState.currentUser) {
+            document.getElementById('loginPage').classList.remove('active');
+
+            if (window.appState.currentUser.role === 'admin') {
+              document.getElementById('adminPage').classList.add('active');
+              loadAdminData();
+            } else if (window.appState.currentUser.role === 'judge') {
+              document.getElementById('judgePage').classList.add('active');
+              document.getElementById('judgeName').textContent = window.appState.currentUser.name;
+              loadJudgeProjects();
+            }
+          }
+        }, 500); // Firebase 초기화를 위한 약간의 지연
+      }
+    } catch(e) {
+      // sessionStorage 사용 불가 시 무시
+    }
+  });
 </script>
 </body>
 </html>
