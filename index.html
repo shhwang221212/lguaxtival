@@ -2115,9 +2115,6 @@
                                     <span class="category-badge ${categoryClass}">${project.criteriaCategory || '기타'}</span>
                                     ${project.cloudVendor ? `<span class="vendor-badge ${vendorClass}">${project.cloudVendor}</span>` : ''}
                                 </div>
-                                <div class="participant-list">
-                                    ${project.participants.map(p => `<span class="participant-tag">${p}</span>`).join('')}
-                                </div>
                             </div>
                             <div class="total-score">평균: ${project.avgScore.toFixed(1)}점</div>
                         </div>
@@ -2187,9 +2184,7 @@
                         <div class="project-meta" style="margin-bottom: 20px;">
                             ${project.criteriaCategory || '기타'} | ${project.cloudVendor}
                         </div>
-                        <div class="participant-list">
-                            ${project.participants.map(p => `<span class="participant-tag">${p}</span>`).join('')}
-                        </div>
+
 
                         ${criteriaData ? `
                             <h3 style="margin-top: 30px;">평가 항목별 평균 점수</h3>
@@ -2691,9 +2686,6 @@
                                 <div class="project-meta" style="margin-top: 10px;">
                                     <span class="category-badge ${categoryClass}">${project.criteriaCategory || '기타'}</span>
                                     ${project.cloudVendor ? `<span class="vendor-badge ${vendorClass}">${project.cloudVendor}</span>` : ''}
-                                </div>
-                                <div class="participant-list">
-                                    ${project.participants.map(p => `<span class="participant-tag">${p}</span>`).join('')}
                                 </div>
                             </div>
                         </div>
