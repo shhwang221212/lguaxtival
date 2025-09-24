@@ -167,8 +167,6 @@
       transform: translateY(0);
     }
 
-
-
     @media (max-width: 768px) {
       h1 {
         font-size: 1.5rem;
@@ -252,6 +250,16 @@
         display: block;
         width: 80%;
         max-width: 300px;
+      }
+
+      .project-meta {
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+      }
+
+      .judge-score-badge {
+        margin-left: auto !important;
+        flex-shrink: 0;
       }
     }
 
@@ -372,6 +380,11 @@
       color: #FF1493;
       opacity: 0.8;
       font-size: 0.9rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 5px;
     }
 
     .project-rank {
@@ -910,17 +923,19 @@
       font-weight: 600;
       margin-right: 10px;
       display: inline-block;
-    }        .login-container h2 {
-               text-align: center;
-               color: #ffffff;
-               text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-             }
+    }
 
-    .login-container h2 .brand {
-      background: linear-gradient(90deg, #FF1493, #FF69B4);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 30px rgba(255, 20, 147, 0.5);
+    /* 심사위원 점수 배지 스타일 추가 */
+    .judge-score-badge {
+      background: linear-gradient(135deg, #32CD32, #90EE90);
+      color: #000;
+      padding: 3px 10px;
+      border-radius: 15px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-block;
+      margin-left: 5px;
+      white-space: nowrap;
     }
   </style>
   <style id="softer-theme">
@@ -1098,6 +1113,19 @@
     .card.completed::after{
       color: #9ed4bf !important;
       font-size: .85rem !important;
+    }
+
+    /* 심사위원 점수 배지 스타일 */
+    .judge-score-badge {
+      background: linear-gradient(135deg, var(--ok-1), #9ed4bf) !important;
+      color: #0e141a !important;
+      padding: 3px 10px;
+      border-radius: 15px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: inline-block;
+      margin-left: 5px;
+      white-space: nowrap;
     }
 
     /* 애니메이션/글로우 완화 */
@@ -2621,32 +2649,51 @@
     window.appState.editingUserId = null;
   };
 
+  // loadJudgeProjects 함수 - 점수 표시 수정
   window.loadJudgeProjects = async function() {
     try {
       const projectsSnapshot = await getDocs(collection(db, 'projects'));
       const projectsList = document.getElementById('judgeProjectList');
       projectsList.innerHTML = '';
 
-      // 현재 심사위원이 채점한 과제 목록 가져오기
+      // 현재 심사위원이 채점한 과제 목록과 점수 가져오기
       const scoresQuery = query(collection(db, 'scores'), where("judgeId", "==", window.appState.currentUser.userId));
       const scoresSnapshot = await getDocs(scoresQuery);
-      const scoredProjectIds = new Set();
+      const scoresByProjectId = {};
 
       scoresSnapshot.forEach(doc => {
-        scoredProjectIds.add(doc.data().projectId);
+        const scoreData = doc.data();
+        scoresByProjectId[scoreData.projectId] = scoreData;
       });
 
       // 프로젝트 데이터를 배열로 수집
       const projects = [];
-      projectsSnapshot.forEach(doc => {
+      for (const doc of projectsSnapshot.docs) {
         const project = doc.data();
-        const isScored = scoredProjectIds.has(doc.id);
+        const isScored = scoresByProjectId.hasOwnProperty(doc.id);
+        const scoreData = scoresByProjectId[doc.id];
+
+        // 심사 기준 정보 가져오기 (총점 표시를 위해)
+        let maxScore = 100; // 기본값
+        if (project.criteriaId) {
+          try {
+            const criteriaDoc = await getDoc(doc(db, 'criteria', project.criteriaId));
+            if (criteriaDoc.exists()) {
+              maxScore = criteriaDoc.data().totalScore;
+            }
+          } catch (error) {
+            // 오류 무시
+          }
+        }
+
         projects.push({
           id: doc.id,
           data: project,
-          isScored: isScored
+          isScored: isScored,
+          score: scoreData ? scoreData.totalScore : null,
+          maxScore: maxScore
         });
-      });
+      }
 
       // 조 이름으로 정렬 (오름차순)
       // 숫자가 포함된 조 이름도 자연스럽게 정렬되도록 처리
@@ -2666,7 +2713,7 @@
       });
 
       // 정렬된 순서로 프로젝트 카드 생성
-      projects.forEach(({ id, data: project, isScored }) => {
+      projects.forEach(({ id, data: project, isScored, score, maxScore }) => {
         const vendorClass = project.cloudVendor ? `vendor-${project.cloudVendor.toLowerCase()}` : '';
         const categoryClass = project.criteriaCategory ?
           (project.criteriaCategory.includes('자유') ? 'category-free' :
@@ -2677,15 +2724,20 @@
         projectCard.className = `card project-item ${isScored ? 'completed' : ''}`;
         projectCard.innerHTML = `
                         <div class="project-info">
-                            <div>
+                            <div style="flex: 1;">
                                 <div style="margin-bottom: 8px;">
                                     ${project.teamName ? `<span class="team-badge">${project.teamName}</span>` : ''}
                                     <span class="project-title">${project.title}</span>
                                     ${isScored ? '<span class="completed-check">✓</span>' : ''}
                                 </div>
-                                <div class="project-meta" style="margin-top: 10px;">
-                                    <span class="category-badge ${categoryClass}">${project.criteriaCategory || '기타'}</span>
-                                    ${project.cloudVendor ? `<span class="vendor-badge ${vendorClass}">${project.cloudVendor}</span>` : ''}
+                                <div class="project-meta" style="margin-top: 10px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+                                    <div>
+                                        <span class="category-badge ${categoryClass}">${project.criteriaCategory || '기타'}</span>
+                                        ${project.cloudVendor ? `<span class="vendor-badge ${vendorClass}">${project.cloudVendor}</span>` : ''}
+                                    </div>
+                                    ${isScored ? `
+                                        <span class="judge-score-badge">${score}/${maxScore}</span>
+                                    ` : ''}
                                 </div>
                             </div>
                         </div>
@@ -2761,18 +2813,18 @@
                         <h4>기존 채점 내역</h4>
                         ${criteriaData.items.filter(item => item.type === 'number').map(item => `
                             <div class="score-detail">
-                                <span>${item.name}:</span>
-                                <span>${existingScore.itemScores?.[item.name] || 0}점 / ${item.score}점</span>
+                                <span style="color: #ffffff;">${item.name}:</span>
+                                <span style="color: #ffffff;">${existingScore.itemScores?.[item.name] || 0}점 <span style="color: #FF69B4;">/ ${item.score}점</span></span>
                             </div>
                         `).join('')}
                         <div class="score-detail">
-                            <span>총점:</span>
-                            <span><strong>${existingScore.totalScore}점 / ${criteriaData.totalScore}점</strong></span>
+                            <span style="color: #ffffff;">총점:</span>
+                            <span><strong style="color: #ffffff;">${existingScore.totalScore}점 <span style="color: #FF69B4;">/ ${criteriaData.totalScore}점</span></strong></span>
                         </div>
                         ${existingScore.review ? `
                             <div class="score-detail">
-                                <span>총평:</span>
-                                <span>${existingScore.review}</span>
+                                <span style="color: #ffffff;">총평:</span>
+                                <span style="color: #ffffff;">${existingScore.review}</span>
                             </div>
                         ` : ''}
                     </div>
@@ -2781,12 +2833,11 @@
 
     scoringForm.innerHTML = `
                 <h3 style="color: #ffffff;">채점하기: ${project.teamName ? project.teamName + ' - ' : ''}${project.title}</h3>
-                <div class="project-meta" style="margin: 10px 0;">
+                <div class="project-meta" style="margin: 10px 0; justify-content: flex-start;">
                     <span class="category-badge ${project.criteriaCategory?.includes('자유') ? 'category-free' :
       project.criteriaCategory?.includes('과제') ? 'category-challenge' : 'category-etc'}">
                         ${project.criteriaCategory || '기타'}
-                    </span>
-                    ${project.cloudVendor ?
+                    </span>${project.cloudVendor ?
       `<span class="vendor-badge vendor-${project.cloudVendor.toLowerCase()}">${project.cloudVendor}</span>` : ''}
                 </div>
                 <div style="margin: 10px 0; color: #FF69B4; font-size: 0.9rem;">
@@ -2902,15 +2953,6 @@
         window.showMessage(`${itemName} 점수는 0-${maxScore}점 사이여야 합니다.`, 'error');
         return;
       }
-      // if (required && value === 0) {
-      //   window.showMessage(`필수 항목 "${itemName}"을(를) 채점해주세요.`, 'error');
-      //   return;
-      // }
-      //
-      // if (value < 0 || value > maxScore) {
-      //   window.showMessage(`${itemName} 점수는 0-${maxScore}점 사이여야 합니다.`, 'error');
-      //   return;
-      // }
 
       itemScores[itemName] = value;
       totalScore += value;
