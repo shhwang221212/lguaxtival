@@ -68,6 +68,15 @@
       color: #ffffff;
       margin-bottom: 10px;
       font-size: 1.1rem;
+    }ffffff;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+    }
+
+    h4 {
+      color: #ffffff;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
     }
 
     .page {
@@ -309,8 +318,8 @@
       background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
       border: 2px solid #FF1493;
       border-radius: 15px;
-      padding: 20px;
-      margin-bottom: 20px;
+      padding: 15px 20px;
+      margin-bottom: 15px;
       box-shadow: 0 5px 20px rgba(255, 20, 147, 0.2);
       transition: all 0.3s ease;
     }
@@ -747,8 +756,8 @@
     }
 
     .user-card {
-      background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
-      border: 2px solid #FF1493;
+      background: #141821;
+      border: none;
       border-radius: 15px;
       padding: 20px;
       display: flex;
@@ -762,13 +771,13 @@
 
     .user-name {
       font-size: 1.1rem;
-      color: #FF69B4;
+      color: #ffffff;
       font-weight: 600;
       margin-bottom: 5px;
     }
 
     .user-credentials {
-      color: #FF1493;
+      color: #FF69B4;
       font-size: 0.9rem;
       opacity: 0.9;
     }
@@ -1001,6 +1010,11 @@
     }
     .card:hover{ transform: none !important; box-shadow: var(--shadow) !important; }
 
+    /* 심사기준 설명 텍스트 색상 오버라이드 */
+    .criteria-description {
+      color: #EEEEEE !important;
+    }
+
     /* 탭 */
     .tabs{ border-bottom: 1px solid var(--border) !important; }
     .tab-btn{
@@ -1139,6 +1153,28 @@
       .container{ padding: 12px; }
       .card{ padding: 16px !important; }
     }
+
+    .criteria-item {
+      background: #0a0a0a;
+      border: 1px solid #333333;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .criteria-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .criteria-item-name {
+      color: #ffffff;
+      font-weight: bold;
+    }
+
+    .criteria-item-
   </style>
 
 </head>
@@ -2114,13 +2150,13 @@
         const index = categoryProjects.findIndex(p => p.id === project.id);
 
         let rankLabel = '';
-        let rank = 0;
-        if (index === 0) {
-          rank = 1;
-          rankLabel = `${category}1등`;
-        } else if (index === 1) {
-          rank = 2;
-          rankLabel = `${category}2등`;
+        let rankStyle = '';
+        if (index === 0 && project.avgScore > 0) {
+          rankLabel = `🥇 ${category} 1등`;
+          rankStyle = 'background: linear-gradient(135deg, #FFD700, #FFA500);';
+        } else if (index === 1 && project.avgScore > 0) {
+          rankLabel = `🥈 ${category} 2등`;
+          rankStyle = 'background: linear-gradient(135deg, #C0C0C0, #808080);';
         }
 
         const vendorClass = project.cloudVendor ? `vendor-${project.cloudVendor.toLowerCase()}` : '';
@@ -2132,23 +2168,25 @@
         const projectCard = document.createElement('div');
         projectCard.className = 'card project-item';
         projectCard.innerHTML = `
-                        ${rank > 0 ? `<div class="project-rank" style="background: ${rank === 1 ? 'linear-gradient(135deg, #FFD700, #FFA500)' : 'linear-gradient(135deg, #C0C0C0, #808080)'};">${rankLabel}</div>` : ''}
-                        <div class="project-info">
-                            <div style="${rank > 0 ? 'margin-left: 120px;' : ''}">
+                        ${rankLabel ? `<div class="project-rank" style="${rankStyle}">${rankLabel}</div>` : ''}
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="${rankLabel ? 'margin-left: 120px;' : ''}">
                                 <div style="margin-bottom: 8px;">
                                     ${project.teamName ? `<span class="team-badge">${project.teamName}</span>` : ''}
                                     <span class="project-title">${project.title}</span>
                                 </div>
-                                <div class="project-meta" style="margin-top: 10px;">
+                                <div style="display: flex; gap: 5px; align-items: center;">
                                     <span class="category-badge ${categoryClass}">${project.criteriaCategory || '기타'}</span>
                                     ${project.cloudVendor ? `<span class="vendor-badge ${vendorClass}">${project.cloudVendor}</span>` : ''}
                                 </div>
                             </div>
-                            <div class="total-score">평균: ${project.avgScore.toFixed(1)}점</div>
-                        </div>
-                        <div class="action-buttons">
-                            <button class="edit-btn" onclick="editProject('${project.id}')">수정</button>
-                            <button class="delete-btn" onclick="deleteProject('${project.id}')">삭제</button>
+                            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
+                                <div class="total-score" style="text-align: right;">평균: ${project.avgScore.toFixed(1)}점</div>
+                                <div class="action-buttons">
+                                    <button class="edit-btn" onclick="editProject('${project.id}')">수정</button>
+                                    <button class="delete-btn" onclick="deleteProject('${project.id}')">삭제</button>
+                                </div>
+                            </div>
                         </div>
                     `;
         projectCard.onclick = (e) => {
