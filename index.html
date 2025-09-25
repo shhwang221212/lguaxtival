@@ -1111,13 +1111,6 @@
     .error-message{ background: var(--err-1) !important; color: #fff !important; }
     .info-message{ background: var(--warn-1) !important; color: #1a1304 !important; }
 
-    /* 랭크 배지(금/은 톤 다운) */
-    .project-rank{
-      background: linear-gradient(135deg, #d8c77a, #b39b4a) !important;
-      color: #0f1115 !important;
-      box-shadow: none !important;
-    }
-
     /* 완료 카드 강조를 부드럽게 */
     .card.completed{
       background: var(--bg-elev-2) !important;
@@ -2152,11 +2145,11 @@
         let rankLabel = '';
         let rankStyle = '';
         if (index === 0 && project.avgScore > 0) {
-          rankLabel = `🥇 ${category} 1등`;
+          rankLabel = `${category} 1등`;
           rankStyle = 'background: linear-gradient(135deg, #FFD700, #FFA500);';
         } else if (index === 1 && project.avgScore > 0) {
-          rankLabel = `🥈 ${category} 2등`;
-          rankStyle = 'background: linear-gradient(135deg, #C0C0C0, #808080);';
+          rankLabel = `${category} 2등`;
+          rankStyle = 'background: linear-gradient(135deg, #C0C0C0, #A8A8A8);';
         }
 
         const vendorClass = project.cloudVendor ? `vendor-${project.cloudVendor.toLowerCase()}` : '';
