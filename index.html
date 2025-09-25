@@ -400,7 +400,6 @@
       position: absolute;
       top: 10px;
       left: 10px;
-      background: linear-gradient(135deg, #FFD700, #FFA500);
       color: #000;
       padding: 5px 12px;
       border-radius: 20px;
@@ -408,9 +407,6 @@
       font-size: 0.9rem;
       min-width: 70px;
       text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
     }
 
@@ -2183,8 +2179,45 @@
         categoryGroups[category].sort((a, b) => b.avgScore - a.avgScore);
       });
 
+      // 정렬된 프로젝트 목록 생성
+      const sortedProjects = [];
+      const rankedProjects = new Set(); // 1,2등 프로젝트 ID 저장
+
+      // 먼저 각 부문별 1,2등 추가
+      Object.keys(categoryGroups).forEach(category => {
+        const categoryProjects = categoryGroups[category];
+        if (categoryProjects.length > 0 && categoryProjects[0].avgScore > 0) {
+          sortedProjects.push(categoryProjects[0]); // 1등
+          rankedProjects.add(categoryProjects[0].id);
+        }
+        if (categoryProjects.length > 1 && categoryProjects[1].avgScore > 0) {
+          sortedProjects.push(categoryProjects[1]); // 2등
+          rankedProjects.add(categoryProjects[1].id);
+        }
+      });
+
+      // 나머지 프로젝트를 조 이름으로 정렬하여 추가
+      const unrankedProjects = projects.filter(p => !rankedProjects.has(p.id));
+      unrankedProjects.sort((a, b) => {
+        const teamA = a.teamName || '';
+        const teamB = b.teamName || '';
+
+        // 숫자 추출을 위한 정규식
+        const numA = parseInt(teamA.match(/\d+/) || '999');
+        const numB = parseInt(teamB.match(/\d+/) || '999');
+
+        // 숫자가 있으면 숫자로 비교, 없으면 문자열로 비교
+        if (!isNaN(numA) && !isNaN(numB)) {
+          return numA - numB;
+        }
+        return teamA.localeCompare(teamB, 'ko');
+      });
+
+      // 정렬된 순서대로 최종 목록 생성
+      const finalProjectList = [...sortedProjects, ...unrankedProjects];
+
       // 프로젝트 카드 생성
-      projects.forEach((project) => {
+      finalProjectList.forEach((project) => {
         const category = project.criteriaCategory || '기타';
         const categoryProjects = categoryGroups[category];
         const index = categoryProjects.findIndex(p => p.id === project.id);
@@ -2647,22 +2680,27 @@
       const judgesList = document.getElementById('judgesList');
       judgesList.innerHTML = '';
 
-      judgesSnapshot.forEach(doc => {
-        const judge = doc.data();
+      // judgesSnapshot을 배열로 변환 후 정렬
+      const sortedJudges = judgesSnapshot.docs
+        .map(doc => ({ id: doc.id, ...doc.data() }))
+        .sort((a, b) => a.name.localeCompare(b.name)); // 이름 기준 오름차순 정렬
+
+      // 정렬된 배열을 이용해 DOM에 추가
+      sortedJudges.forEach(judge => {
         const userCard = document.createElement('div');
         userCard.className = 'user-card';
         userCard.innerHTML = `
-                        <div class="user-info">
-                            <div class="user-name">${judge.name}</div>
-                            <div class="user-credentials">
-                                아이디: ${judge.userId} | 비밀번호: ${judge.password}
-                            </div>
-                        </div>
-                        <div class="action-buttons">
-                            <button class="edit-btn" onclick="editUser('${doc.id}')">수정</button>
-                            <button class="delete-btn" onclick="deleteUser('${doc.id}')">삭제</button>
-                        </div>
-                    `;
+            <div class="user-info">
+                <div class="user-name">${judge.name}</div>
+                <div class="user-credentials">
+                    아이디: ${judge.userId} | 비밀번호: ${judge.password}
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="edit-btn" onclick="editUser('${judge.id}')">수정</button>
+                <button class="delete-btn" onclick="deleteUser('${judge.id}')">삭제</button>
+            </div>
+        `;
         judgesList.appendChild(userCard);
       });
     } catch (error) {
