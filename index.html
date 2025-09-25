@@ -1111,6 +1111,13 @@
     .error-message{ background: var(--err-1) !important; color: #fff !important; }
     .info-message{ background: var(--warn-1) !important; color: #1a1304 !important; }
 
+    /* 랭크 배지(금/은 톤 다운) */
+    /*.project-rank{*/
+    /*  background: linear-gradient(135deg, #d8c77a, #b39b4a) !important;*/
+    /*  color: #0f1115 !important;*/
+    /*  box-shadow: none !important;*/
+    /*}*/
+
     /* 완료 카드 강조를 부드럽게 */
     .card.completed{
       background: var(--bg-elev-2) !important;
@@ -2163,7 +2170,7 @@
         projectCard.innerHTML = `
                         ${rankLabel ? `<div class="project-rank" style="${rankStyle}">${rankLabel}</div>` : ''}
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div style="${rankLabel ? 'margin-left: 120px;' : ''}">
+                            <div>
                                 <div style="margin-bottom: 8px;">
                                     ${project.teamName ? `<span class="team-badge">${project.teamName}</span>` : ''}
                                     <span class="project-title">${project.title}</span>
