@@ -820,6 +820,23 @@
       background: #5a6268;
     }
 
+    .logout-btn {
+      background: linear-gradient(135deg, #dc3545, #c82333);
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px 10px 0 0;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background: linear-gradient(135deg, #c82333, #bd2130);
+      transform: translateY(-2px);
+    }
+
     .criteria-item {
       background: #0a0a0a;
       border: 1px solid #FF1493;
@@ -1112,11 +1129,11 @@
     .info-message{ background: var(--warn-1) !important; color: #1a1304 !important; }
 
     /* 랭크 배지(금/은 톤 다운) */
-    /*.project-rank{*/
-    /*  background: linear-gradient(135deg, #d8c77a, #b39b4a) !important;*/
-    /*  color: #0f1115 !important;*/
-    /*  box-shadow: none !important;*/
-    /*}*/
+    .project-rank{
+      background: linear-gradient(135deg, #d8c77a, #b39b4a) !important;
+      color: #0f1115 !important;
+      box-shadow: none !important;
+    }
 
     /* 완료 카드 강조를 부드럽게 */
     .card.completed{
@@ -1212,6 +1229,7 @@
       <button class="tab-btn" onclick="switchTab('criteriaCreate')">심사항목 생성</button>
       <button class="tab-btn" onclick="switchTab('judges')">심사위원 관리</button>
       <button class="tab-btn" onclick="switchTab('register')">심사위원 등록</button>
+      <button class="logout-btn" onclick="logout()" style="margin-left: auto;">로그아웃</button>
     </div>
 
     <div id="projectListTab" class="tab-content active">
@@ -1597,6 +1615,28 @@
   };
 
   // 나머지 전역 함수들도 여기에 정의
+  window.logout = function() {
+    if (confirm('정말 로그아웃 하시겠습니까?')) {
+      // 세션 정보 삭제
+      window.appState.currentUser = null;
+      try {
+        sessionStorage.removeItem('currentUser');
+      } catch(e) {
+        // sessionStorage 사용 불가 시 무시
+      }
+
+      // 로그인 페이지로 이동
+      document.getElementById('adminPage').classList.remove('active');
+      document.getElementById('judgePage').classList.remove('active');
+      document.getElementById('loginPage').classList.add('active');
+
+      // 로그인 폼 초기화
+      document.getElementById('loginId').value = '';
+      document.getElementById('loginPassword').value = '';
+
+      showMessage('로그아웃되었습니다.', 'info');
+    }
+  };
   window.registerUser = function() { };
   window.registerProject = function() { };
   window.switchTab = function(tabName) { };
@@ -2170,7 +2210,7 @@
         projectCard.innerHTML = `
                         ${rankLabel ? `<div class="project-rank" style="${rankStyle}">${rankLabel}</div>` : ''}
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
+                            <div style="${rankLabel ? 'margin-left: 120px;' : ''}">
                                 <div style="margin-bottom: 8px;">
                                     ${project.teamName ? `<span class="team-badge">${project.teamName}</span>` : ''}
                                     <span class="project-title">${project.title}</span>
@@ -2251,6 +2291,14 @@
                             ${project.criteriaCategory || '기타'} | ${project.cloudVendor}
                         </div>
 
+                        <h3 style="margin-top: 20px;">참가자 정보</h3>
+                        <div class="participant-list" style="margin-bottom: 30px;">
+                            ${project.participants && project.participants.length > 0 ?
+        project.participants.map(participant =>
+          `<span class="participant-tag">${participant}</span>`
+        ).join('')
+        : '<p style="color: #FF69B4;">참가자 정보가 없습니다.</p>'}
+                        </div>
 
                         ${criteriaData ? `
                             <h3 style="margin-top: 30px;">평가 항목별 평균 점수</h3>
