@@ -67,6 +67,10 @@
           <input type="text" id="projectTitle" placeholder="과제명 입력">
         </div>
         <div class="form-group">
+          <label>과제요약</label>
+          <input type="text" id="projectSummary" placeholder="과제요약 입력">
+        </div>
+        <div class="form-group">
           <label>참가자 (쉼표로 구분)</label>
           <input type="text" id="projectParticipants" placeholder="예: 홍길동, 김철수, 이영희">
         </div>
@@ -196,6 +200,10 @@
     <div class="form-group">
       <label>과제명</label>
       <input type="text" id="editProjectTitle" placeholder="과제명 입력">
+    </div>
+    <div class="form-group">
+      <label>과제명</label>
+      <input type="text" id="editProjectSummary" placeholder="과제요약 입력">
     </div>
     <div class="form-group">
       <label>참가자 (쉼표로 구분)</label>
@@ -853,10 +861,11 @@ window.loadCategoriesForProject = async function () {
 window.registerProject = async function () {
   const teamName = document.getElementById('teamName').value;
   const title = document.getElementById('projectTitle').value;
+  const summary = document.getElementById('projectSummary').value;
   const participants = document.getElementById('projectParticipants').value;
   const categoryId = document.getElementById('projectCategory').value;
 
-  if (!teamName || !title || !participants || !categoryId) {
+  if (!teamName || !title || !summary || !participants || !categoryId) {
     window.showMessage('모든 필드를 입력하세요.', 'error');
     return;
   }
@@ -869,6 +878,7 @@ window.registerProject = async function () {
     await addDoc(collection(db, 'projects'), {
       teamName: teamName,
       title: title,
+      summary: summary,
       participants: participants.split(',').map(p => p.trim()),
       criteriaId: categoryId,
       criteriaCategory: criteriaData.category,
@@ -880,6 +890,7 @@ window.registerProject = async function () {
 
     document.getElementById('teamName').value = '';
     document.getElementById('projectTitle').value = '';
+    document.getElementById('projectSummary').value = '';
     document.getElementById('projectParticipants').value = '';
     document.getElementById('projectCategory').value = '';
 
@@ -1109,7 +1120,10 @@ window.showProjectDetail = async function (projectId) {
                             ${project.teamName ? `<span class="team-badge">${project.teamName}</span>` : ''}
                             ${project.title}
                         </h2>
-
+                        <h3 style="margin-top: 20px;">과제 요약</h3>
+                        <h4 style="margin-top: 20px;">
+                            ${project.summary}
+                        </h4>
                         <h3 style="margin-top: 20px;">참가자 정보</h3>
                         <div class="participant-list" style="margin-bottom: 30px;">
                             ${project.participants && project.participants.length > 0 ?
@@ -1280,6 +1294,7 @@ window.editProject = async function (projectId) {
     // 폼에 값 설정
     document.getElementById('editTeamName').value = project.teamName || '';
     document.getElementById('editProjectTitle').value = project.title || '';
+    document.getElementById('editProjectSummary').value = project.title || '';
     document.getElementById('editProjectParticipants').value = project.participants ? project.participants.join(', ') : '';
     document.getElementById('editProjectCategory').value = project.criteriaId || '';
 
@@ -1311,10 +1326,11 @@ window.loadCategoriesForEditProject = async function () {
 window.updateProject = async function () {
   const teamName = document.getElementById('editTeamName').value;
   const title = document.getElementById('editProjectTitle').value;
+  const summary = document.getElementById('editProjectSummary').value;
   const participants = document.getElementById('editProjectParticipants').value;
   const categoryId = document.getElementById('editProjectCategory').value;
 
-  if (!teamName || !title || !participants || !categoryId) {
+  if (!teamName || !title || !summary || !participants || !categoryId) {
     window.showMessage('모든 필드를 입력하세요.', 'error');
     return;
   }
@@ -1327,6 +1343,7 @@ window.updateProject = async function () {
     await updateDoc(doc(db, 'projects', window.appState.editingProjectId), {
       teamName: teamName,
       title: title,
+      summary: summary,
       participants: participants.split(',').map(p => p.trim()),
       criteriaId: categoryId,
       criteriaCategory: criteriaData.category,
@@ -1751,10 +1768,10 @@ window.showScoringForm = async function (projectId, project, element) {
 
   scoringForm.innerHTML = `
                 <h3 style="color: #ffffff;">채점하기: ${project.teamName ? project.teamName + ' - ' : ''}${project.title}</h3>
-                <div style="margin: 10px 0; color: #FF69B4; font-size: 0.9rem;">
-                    💡 팁: 과제를 다시 클릭하면 채점 창이 닫힙니다.
+                <div class="existing-score">
+                    <h4>과제 요약</h4>
+                    <div style="color: #ffffff;">${project.summary}</div>
                 </div>
-
                 ${existingScoreHtml}
 
                 <h4 style="margin-top: 40px; color: #ffffff;">심사기준 - <strong style="color: #32CD32;">${criteriaData.description}</strong></h4>
